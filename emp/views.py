@@ -329,24 +329,24 @@ class EmployeeDestroy(generics.DestroyAPIView):
 
 
 class TaskList(generics.ListAPIView):
-    queryset = Task.objects.all()
+    queryset = Task.objects.raw('SELECT * FROM emp_task')
     serializer_class = TaskSerializer
 
 
 class TaskCreate(generics.CreateAPIView):
-    queryset = Task.objects.all()
+    queryset = Task.objects.raw('SELECT * FROM emp_task')
     serializer_class = TaskSerializer
 
 class TaskRetrieve(generics.RetrieveAPIView):
-    queryset = Task.objects.all()
+    queryset = Task.objects.raw('SELECT * FROM emp_task')
     serializer_class = TaskSerializer
     
 
 class TaskUpdate(generics.UpdateAPIView):
-    queryset = Task.objects.all()
+    queryset = Task.objects.raw('SELECT * FROM emp_task')
     serializer_class = TaskSerializer
 
 
 class TaskDestroy(generics.DestroyAPIView):
-    queryset = Task.objects.all()
+    queryset = Task.objects.raw('SELECT * FROM emp_task')
     serializer_class = TaskSerializer 
