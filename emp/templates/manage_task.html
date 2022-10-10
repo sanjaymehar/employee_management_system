@@ -1,0 +1,91 @@
+<div class="container-fluid">
+    <form action="" id="task-form">
+        <input type="hidden" name="id" value="{% if task.pk %}{{task.pk}}{% endif %}">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <dt class="mdc-typography mdc-theme--primary">Employee Name</dt>
+                    <dd class="ps-3 fw-bolder">{{ task.employee.name }}</dd>
+                </div>
+               
+            
+            </div>
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+                    <label for="status" class="control-label">Task Status</label>
+                    <select name="status" id="status" class="form-select form-select-sm rounded-0" required>
+                        {% if not task.status %}
+                        <option value="1" disabled selected>Please Select Here</option>
+                        {% else %}
+                        <option value="1" disabled>Please Select Here</option>
+                        {% endif %}
+                        {% for i in status %}
+                            
+                            <option value="{{i}}">{{ i }}</option>
+                            
+                        {% endfor %}
+
+                    </select>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="tname" class="control-label">Task name</label>
+                    <input type="text" name="tname" id="tname" class="form-control form-control-sm rounded-0" value="{% if task.t_name %}{{task.t_name}}{% endif %}" required>
+               
+                </div> 
+                
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(function() {
+        $('#task-form').submit(function(e) {
+            e.preventDefault();
+            var _this = $(this)
+            $('.err-msg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg")
+            el.hide()
+            if (_this[0].checkValidity() == false) {
+                _this[0].reportValidity();
+                return false;
+            }
+            start_loader();
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                url: "{% url 'save_task-page' %}",
+                data: new FormData($(this)[0]),
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert_toast("An error occured", 'error');
+                    end_loader();
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.statuss == 'success') {
+                        el.removeClass("alert alert-danger err-msg")
+                        location.reload()
+                    } else if (resp.statuss == 'failed' && !!resp.msg) {
+                        el.text(resp.msg)
+                    } else {
+                        el.text("An error occured", 'error');
+                        end_loader();
+                        console.err(resp)
+                    }
+                    _this.prepend(el)
+                    el.show('slow')
+                    $("html, body, .modal").scrollTop(0);
+                    end_loader()
+                }
+            })
+        })
+    })
+</script>
